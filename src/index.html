@@ -1,25 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping List</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="../dist/css/style.css" />
+    <script src="js/script.js" defer></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopping List</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
-  <link rel="stylesheet" href="../dist/css/style.css">
-  <script src="js/script.js" defer></script>
-</head>
-
-<body>
-  <main>
-    <div class="title-container">
-      <h1>Shopping List</h1>
-    </div>
-    <div class="main-container">
-      <div id="content"></div>
-    </div>
-    <div class="space-container"></div>
-  </main>
-</body>
-
+  <body>
+    <main>
+      <div class="title-container">
+        <h1>Shopping List</h1>
+      </div>
+      <div class="app-container">
+        <form id="product-form">
+          <label for="product-text-input">Enter product name:</label>
+          <div class="input-data-container">
+            <input
+              id="product-text-input"
+              type="text"
+              placeholder="e.g. milk"
+              required
+            />
+            <button id="product-add-button">Add</button>
+          </div>
+        </form>
+        <div class="control-panel">
+          <div class="control-panel-left">
+            <div class="control-checkbox-container">
+              <div class="tooltip">Check all</div>
+              <input id="select-all-checkbox" type="checkbox" />
+            </div>
+            <button class="control-button">
+              <div class="tooltip">Sort</div>
+              <span>⇅</span>
+            </button>
+          </div>
+          <div class="control-panel-right">
+            <button class="control-button">
+              <div class="tooltip">Form list</div>
+              <span>Form</span>
+            </button>
+            <button class="control-button">
+              <div class="tooltip">Create new list</div>
+              <span>New</span>
+            </button>
+            <button class="control-button">
+              <div class="tooltip">Select old list</div>
+              <span>Select</span>
+            </button>
+          </div>
+        </div>
+        <div class="product-list-container">
+          <ol class="product-list"></ol>
+        </div>
+      </div>
+      <div class="space-container"></div>
+    </main>
+  </body>
 </html>

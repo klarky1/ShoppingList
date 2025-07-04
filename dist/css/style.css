@@ -1,13 +1,13 @@
-:root {
-  font-size: 20px;
-}
-
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  font-size: 20px;
 }
 
 body {
@@ -17,7 +17,6 @@ body {
   font-family: Inter, Arial, Helvetica, sans-serif;
 }
 
-/* START */
 main {
   display: grid;
   grid-template-rows: 1fr min-content 1fr;
@@ -29,12 +28,220 @@ main {
 
 .title-container {
   align-self: self-end;
-  padding: 20px 30px;
+  padding: 20px 10px;
 }
 
-.main-container {
+.app-container {
+  border: 2px solid white;
+  border-radius: 20px;
+  padding: 20px;
   width: min(100%, 500px);
-  height: 250px;
+  background-color: #2e2e47;
+}
+
+form {
+  margin-bottom: 40px;
+}
+form > label {
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: 0 auto 10px;
+}
+
+.input-data-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+.input-data-container input {
+  border: 0;
+  border-radius: 4px;
+  padding: 6px 8px;
+  width: min(100%, 260px);
+  font-size: 20px;
+}
+.input-data-container input:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+.input-data-container button {
+  border: 0;
+  border-radius: 4px;
+  padding: 0 16px;
+  height: 35px;
+  background-color: #77b64d;
+  color: white;
+  font-size: 16px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+.input-data-container button:hover {
+  cursor: pointer;
+  background-color: #86d154;
+}
+.input-data-container button:active {
+  background-color: #649c3f;
+  outline: 2px solid #86d154;
+  outline-offset: -2px;
+}
+
+.control-panel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.control-panel-left {
+  display: flex;
+  gap: 10px;
+}
+.control-panel-left > * {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 38px;
+}
+.control-panel-left .control-button {
+  padding-top: 3px;
+  font-size: 22px;
+}
+
+.control-panel-right {
+  display: flex;
+  gap: 10px;
+}
+
+.control-checkbox-container, .control-button {
+  border: 2px solid white;
+  border-radius: 6px;
+  position: relative;
+  height: 38px;
+}
+.control-checkbox-container:hover, .control-button:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.control-checkbox-container:hover .tooltip, .control-button:hover .tooltip {
+  display: block;
+}
+
+.control-button {
+  padding: 0 12px;
+  background-color: transparent;
+  color: white;
+  font-size: 18px;
+}
+.control-button:active span {
+  transform: translateY(2px);
+}
+.control-button span {
+  display: inline-block;
+}
+
+input[type=checkbox] {
+  cursor: pointer;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 48px;
+  width: -moz-max-content;
+  width: max-content;
+  border-radius: 6px;
+  padding: 8px;
+  background-color: #e46f41;
+  font-size: 14px;
+  transform: translateX(-50%);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+}
+.tooltip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 0;
+  height: 0;
+  margin: auto auto -7px;
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: transparent;
+  border-top-color: #e46f41;
+}
+
+.product-list-container {
+  border: 2px solid white;
+  border-radius: 10px;
+  height: 404px;
+  background-color: #292936;
+  overflow: auto;
+}
+
+.product-list {
+  list-style-type: none;
+}
+.product-list > li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 2px solid rgb(255, 255, 255);
+  background-color: #584775;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+.product-list > li:nth-of-type(n + 10):last-of-type {
+  border-bottom: 0;
+}
+.product-list span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-right: 2px solid rgb(255, 255, 255);
+  text-shadow: none;
+}
+.product-list span:hover {
+  cursor: pointer;
+}
+.product-list span:last-of-type {
+  width: 26px;
+  height: 26px;
+  margin: 0 14px 0 auto;
+  border: 0;
+  border-radius: 50%;
+  padding-bottom: 2px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  font-weight: bold;
+}
+.product-list span:last-of-type:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.product-list span:last-of-type:active {
+  color: rgb(255, 255, 255);
+}
+
+.product-list.formed-list {
+  counter-reset: product-counter;
+}
+.product-list.formed-list > li {
+  counter-increment: product-counter;
+}
+.product-list.formed-list > li::before {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  content: counter(product-counter);
+  width: 40px;
+  height: 40px;
+  border-right: 2px solid rgb(255, 255, 255);
+}
+.product-list.formed-list span:first-of-type {
+  display: none;
 }
 
 .space-container {
