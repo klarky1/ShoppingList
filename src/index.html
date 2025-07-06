@@ -8,8 +8,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="../dist/css/style.css" />
-    <script src="js/script.js" defer></script>
+    <link rel="stylesheet" href="scss/style.scss" />
+    <script type="module" src="js/script.js"></script>
   </head>
 
   <body>
@@ -20,14 +20,18 @@
       <div class="app-container">
         <form id="product-form">
           <label for="product-text-input">Enter product name:</label>
-          <div class="input-data-container">
-            <input
-              id="product-text-input"
-              type="text"
-              placeholder="e.g. milk"
-              required
-            />
-            <button id="product-add-button">Add</button>
+          <div class="product-data-container">
+            <div class="product-input-container">
+              <div class="alert">This product is already on the list</div>
+              <input
+                id="product-text-input"
+                type="text"
+                placeholder="e.g. milk"
+                required
+              />
+              <button type="reset">✖</button>
+            </div>
+            <button type="submit">Add</button>
           </div>
         </form>
         <div class="control-panel">
@@ -36,13 +40,13 @@
               <div class="tooltip">Check all</div>
               <input id="select-all-checkbox" type="checkbox" />
             </div>
-            <button class="control-button">
+            <button id="sort-button" class="control-button">
               <div class="tooltip">Sort</div>
               <span>⇅</span>
             </button>
           </div>
           <div class="control-panel-right">
-            <button class="control-button">
+            <button id="form-list-button" class="control-button">
               <div class="tooltip">Form list</div>
               <span>Form</span>
             </button>
@@ -57,7 +61,7 @@
           </div>
         </div>
         <div class="product-list-container">
-          <ol class="product-list"></ol>
+          <ol id="product-ordered-list" class="product-list"></ol>
         </div>
       </div>
       <div class="space-container"></div>

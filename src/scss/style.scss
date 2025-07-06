@@ -1,5 +1,3 @@
-$tooltip-color: #e46f41;
-
 // prettier-ignore
 @mixin box-shape($border: null, $radius: null, $padding: null) {
   @if $border { border: $border; }
@@ -16,6 +14,63 @@ $tooltip-color: #e46f41;
   @if $jc { justify-content: $jc; }
   @if $ai { align-items: $ai; }
   @if $ac { align-content: $ac; }
+}
+
+// prettier-ignore
+@mixin popup-setup($left: 50%, $bottom: calc(100% + 13px), $radius: 6px, $padding: 8px, $bg-color: #e46f41, $font-size: 14px, $arrow-position: -6px, $arrow-width: 10px) {
+  display: none;
+  position: absolute;
+  width: max-content;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+  transform: translateX(-50%);
+  left: $left;
+  bottom: $bottom;
+  border-radius: $radius;
+  padding: $padding;
+  background-color: $bg-color;
+  font-size: $font-size;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 0;
+    height: 0;
+    margin: auto auto $arrow-position;
+    border-width: $arrow-width $arrow-width 0;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: $bg-color;
+  }
+}
+
+@mixin smooth-popup() {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s linear;
+}
+
+// prettier-ignore
+@mixin close-button($round: true, $size: 19px, $font-size: 14px, $color: rgba(0, 0, 0, 0.5), $color-active: rgba(0, 0, 0, 0.7), $bg-color-hover: rgba(0, 0, 0, 0.2)) {
+  border: 0;
+  background-color: transparent;
+  width: $size;
+  height: $size;
+  line-height: $size;
+  font-size: $font-size;
+  color: $color;
+  @if $round { border-radius: 50%; }
+  @else { border-radius: 0; }
+
+  &:hover {
+    background-color: $bg-color-hover;
+  }
+
+  &:active {
+    color: $color-active;
+  }
 }
 
 *,
@@ -36,6 +91,26 @@ body {
   color: white;
   font-family: Inter, Arial, Helvetica, sans-serif;
 }
+
+// -- general selectors --
+.alert,
+.tooltip {
+  @include popup-setup();
+}
+
+.alert {
+  @include smooth-popup();
+
+  &::after {
+    margin: auto auto -6px 20%;
+  }
+}
+
+button,
+input[type="checkbox"] {
+  cursor: pointer;
+}
+// ----
 
 main {
   display: grid;
@@ -67,8 +142,31 @@ form {
   }
 }
 
-.input-data-container {
+.product-data-container {
   @include flex-setup($wrap: wrap, $gap: 12px, $jc: center, $ai: center);
+
+  button[type="submit"] {
+    @include box-shape($border: 0, $radius: 4px, $padding: 0 16px);
+    height: 35px;
+    background-color: #77b64d;
+    color: white;
+    font-size: 16px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      background-color: #86d154;
+    }
+
+    &:active {
+      background-color: #649c3f;
+      outline: 2px solid #86d154;
+      outline-offset: -2px;
+    }
+  }
+}
+
+.product-input-container {
+  position: relative;
 
   input {
     @include box-shape($border: 0, $radius: 4px, $padding: 6px 8px);
@@ -81,24 +179,11 @@ form {
     }
   }
 
-  button {
-    @include box-shape($border: 0, $radius: 4px, $padding: 0 16px);
-    height: 35px;
-    background-color: #77b64d;
-    color: white;
-    font-size: 16px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
-
-    &:hover {
-      cursor: pointer;
-      background-color: #86d154;
-    }
-
-    &:active {
-      background-color: #649c3f;
-      outline: 2px solid #86d154;
-      outline-offset: -2px;
-    }
+  button[type="reset"] {
+    @include close-button();
+    position: absolute;
+    inset: 0;
+    margin: auto 9px auto auto;
   }
 }
 
@@ -159,38 +244,6 @@ form {
   }
 }
 
-input[type="checkbox"] {
-  cursor: pointer;
-}
-
-.tooltip {
-  display: none;
-  position: absolute;
-  left: 50%;
-  bottom: 48px;
-  width: max-content;
-  border-radius: 6px;
-  padding: 8px;
-  background-color: $tooltip-color;
-  font-size: 14px;
-  transform: translateX(-50%);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
-  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    width: 0;
-    height: 0;
-    margin: auto auto -7px;
-    border-width: 10px 10px 0;
-    border-style: solid;
-    border-color: transparent;
-    border-top-color: $tooltip-color;
-  }
-}
-
 .product-list-container {
   @include box-shape($border: 2px solid white, $radius: 10px);
   height: 404px;
@@ -224,24 +277,10 @@ input[type="checkbox"] {
     }
   }
 
-  span:last-of-type {
-    width: 26px;
-    height: 26px;
+  button {
+    // prettier-ignore
+    @include close-button($size: 23px, $font-size: 16px, $color: rgba(255, 255, 255, 0.6), $color-active: rgba(255, 255, 255, 0.8), $bg-color-hover: rgba(255, 255, 255, 0.2));
     margin: 0 14px 0 auto;
-    border: 0;
-    border-radius: 50%;
-    padding-bottom: 2px;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 16px;
-    font-weight: bold;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    &:active {
-      color: rgba(255, 255, 255, 1);
-    }
   }
 }
 
