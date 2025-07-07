@@ -18,6 +18,19 @@
         <h1>Shopping List</h1>
       </div>
       <div class="app-container">
+        <div class="modal-container" hidden>
+          <form id="modal-form">
+            <label for="modal-text-input">Enter the list name:</label>
+            <div class="modal-input-container">
+              <div class="alert">This name is already taken</div>
+              <input id="modal-text-input" type="text" required />
+            </div>
+            <div class="modal-buttons-container">
+              <button type="submit">OK</button>
+              <button id="modal-cancel-button" type="button">Cancel</button>
+            </div>
+          </form>
+        </div>
         <form id="product-form">
           <label for="product-text-input">Enter product name:</label>
           <div class="product-data-container">
@@ -36,9 +49,9 @@
         </form>
         <div class="control-panel">
           <div class="control-panel-left">
-            <div class="control-checkbox-container">
+            <div id="check-button" class="control-checkbox-container">
               <div class="tooltip">Check all</div>
-              <input id="select-all-checkbox" type="checkbox" />
+              <input id="check-all-checkbox" type="checkbox" />
             </div>
             <button id="sort-button" class="control-button">
               <div class="tooltip">Sort</div>
@@ -46,15 +59,15 @@
             </button>
           </div>
           <div class="control-panel-right">
-            <button id="form-list-button" class="control-button">
+            <button id="form-button" class="control-button">
               <div class="tooltip">Form list</div>
               <span>Form</span>
             </button>
-            <button class="control-button">
+            <button id="new-button" class="control-button disabled">
               <div class="tooltip">Create new list</div>
               <span>New</span>
             </button>
-            <button class="control-button">
+            <button id="select-button" class="control-button">
               <div class="tooltip">Select old list</div>
               <span>Select</span>
             </button>
