@@ -106,6 +106,11 @@ body {
   }
 }
 
+.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 button,
 input[type="checkbox"] {
   cursor: pointer;
@@ -128,11 +133,70 @@ main {
 
 .app-container {
   @include box-shape($border: 2px solid white, $radius: 20px, $padding: 20px);
+  position: relative;
   width: min(100%, 500px);
   background-color: #2e2e47;
+  overflow: hidden;
 }
 
-form {
+.modal-container {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+#modal-form {
+  @include box-shape(
+    $border: 1px solid rgb(255, 255, 255),
+    $radius: 10px,
+    $padding: 20px
+  );
+  @include flex-setup($dir: column, $gap: 10px, $ai: center);
+  position: absolute;
+  inset: 0;
+  width: max-content;
+  height: max-content;
+  margin: auto;
+  font-size: 18px;
+  background-color: #2e2e47;
+
+  input {
+    @include box-shape($border: 0, $radius: 4px, $padding: 4px 6px);
+    width: 190px;
+    font-size: 16px;
+
+    &:focus {
+      outline: 1px solid #ffffff;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.modal-input-container {
+  position: relative;
+}
+
+.modal-buttons-container {
+  @include flex-setup($gap: 10px, $jc: center, $ai: center);
+  margin-top: 4px;
+
+  button {
+    @include box-shape($border: 0, $radius: 4px, $padding: 4px 10px);
+    font-size: 14px;
+
+    &:hover {
+      background-color: rgb(215, 215, 215);
+    }
+
+    &:active {
+      background-color: rgb(175, 175, 175);
+    }
+  }
+}
+
+#product-form {
   margin-bottom: 40px;
 
   & > label {
@@ -296,6 +360,10 @@ form {
       width: 40px;
       height: 40px;
       border-right: 2px solid rgba(255, 255, 255, 1);
+    }
+
+    &:has(input:not(:checked)) {
+      display: none;
     }
   }
 
