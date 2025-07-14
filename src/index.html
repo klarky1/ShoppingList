@@ -49,12 +49,13 @@
         </form>
         <div class="control-panel">
           <div class="control-panel-left">
-            <div id="check-button" class="control-checkbox-container">
+            <div id="check-button" class="control-checkbox-container disabled">
               <div class="tooltip">Check all</div>
               <input id="check-all-checkbox" type="checkbox" />
             </div>
-            <button id="sort-button" class="control-button">
+            <button id="sort-button" class="control-button disabled">
               <div class="tooltip">Sort</div>
+              <div class="sort-type-info">A-Z</div>
               <span>⇅</span>
             </button>
           </div>
@@ -67,10 +68,11 @@
               <div class="tooltip">Form list</div>
               <span>Form</span>
             </button>
-            <button id="select-button" class="control-button">
+            <button id="select-button" class="control-button disabled">
               <div class="tooltip">Select old list</div>
               <span>Select</span>
             </button>
+            <ul id="select-unordered-list" class="select-list" hidden></ul>
           </div>
         </div>
         <div class="product-list-container">
