@@ -10,24 +10,35 @@ const product = {
 };
 
 const modal = {
-  container: document.querySelector(".modal-container"),
+  formContainer: document.getElementById("modal-1"),
   form: document.getElementById("modal-form"),
   textInput: document.getElementById("modal-text-input"),
   cancelBtn: document.getElementById("modal-cancel-button"),
   alertPopup: document.getElementById("modal-form").querySelector(".alert"),
+  confirmContainer: document.getElementById("modal-2"),
+  yesBtn: document.getElementById("modal-yes-button"),
+  noBtn: document.getElementById("modal-no-button"),
 };
 
 const control = {
-  checkbox: document.getElementById("check-all-checkbox"),
+  checkTooltip: document.getElementById("toggle-all-checkbox").previousElementSibling,
+  checkbox: document.getElementById("toggle-all-checkbox"),
   checkBtn: document.getElementById("check-button"),
+  actionBtn: document.getElementById("action-button"),
+  actionList: document.getElementById("action-unordered-list"),
   sortBtn: document.getElementById("sort-button"),
-  sortInfoPopup: document
-    .getElementById("sort-button")
-    .querySelector(".sort-type-info"),
+  sortInfoPopup: document.getElementById("sort-button").querySelector(".sort-type-info"),
   formBtn: document.getElementById("form-button"),
-  newBtn: document.getElementById("new-button"),
+  showBtn: document.getElementById("show-button"),
   selectBtn: document.getElementById("select-button"),
   selectList: document.getElementById("select-unordered-list"),
+};
+
+const action = {
+  deleteSelectedBtn: document.getElementById("delete-selected-button"),
+  resetColorsBtn: document.getElementById("reset-colors-button"),
+  saveToDiskBtn: document.getElementById("save-to-disk-button"),
+  deleteFromDiskBtn: document.getElementById("delete-from-disk-button"),
 };
 
 // ** Variables **
@@ -64,34 +75,50 @@ const showPopup = (popup, index, duration = 1800, fading = 200) => {
   }, duration);
 };
 
-const updateFormBtn = () => {
+const updateFormAndActionDelSelectedBtn = () => {
   if (product.list.querySelector("li:has(input:checked)")) {
     control.formBtn.classList.remove("disabled");
+    action.deleteSelectedBtn.firstElementChild.classList.remove("disabled");
   } else {
     control.formBtn.classList.add("disabled");
+    action.deleteSelectedBtn.firstElementChild.classList.add("disabled");
   }
 };
 
+const updateActionResetBtn = () => {
+  if (product.list.querySelector("li.selected-product")) {
+    action.resetColorsBtn.firstElementChild.classList.remove("disabled");
+  } else {
+    action.resetColorsBtn.firstElementChild.classList.add("disabled");
+  }
+};
+
+const updateActionSaveBtn = () => {
+  if (Object.keys(productCollection).length !== 0 || selectCollection.length !== 0) {
+    action.saveToDiskBtn.firstElementChild.classList.remove("disabled");
+  } else {
+    action.saveToDiskBtn.firstElementChild.classList.add("disabled");
+  }
+};
+// START
 // ** Functions for add-button **
-const addProductToCurrentListCollection = (productID, productName) => {
+const addProductToListCollection = (productID, productName, listName = currentListName) => {
   const listItem = document.createElement("li");
   listItem.dataset.productKey = productID;
   listItem.dataset.productName = productName;
-  listItem.dataset.defaultIndex = Object.keys(
-    listCollection[currentListName]
-  ).length;
+  listItem.dataset.defaultIndex = Object.keys(listCollection[listName]).length;
   listItem.dataset.currentIndex = listItem.dataset.defaultIndex;
   listItem.innerHTML = `
     <label>${productName}</label>
     <button>✖</button>
   `;
 
-  listItem.lastElementChild.addEventListener(
-    "click",
-    removeProductFromProductList
-  );
+  listItem.addEventListener("click", changeProductColor);
+  listItem.lastElementChild.addEventListener("click", removeProductFromProductList);
 
-  listCollection[currentListName][productID] = listItem;
+  listCollection[listName][productID] = listItem;
+
+  action.saveToDiskBtn.firstElementChild.classList.remove("disabled");
 };
 
 const addProductToProductCollection = (productID, productName) => {
@@ -107,20 +134,16 @@ const addProductToProductCollection = (productID, productName) => {
   `;
 
   listItem.firstElementChild.addEventListener("click", clickOnProductCheckbox);
-  listItem.firstElementChild.firstElementChild.addEventListener(
-    "change",
-    updateFormBtn
-  );
-  listItem.lastElementChild.addEventListener(
-    "click",
-    removeProductFromProductList
-  );
+  listItem.firstElementChild.firstElementChild.addEventListener("change", updateFormAndActionDelSelectedBtn);
+  listItem.lastElementChild.addEventListener("click", removeProductFromProductList);
 
   productCollection[productID] = listItem;
+
+  action.saveToDiskBtn.firstElementChild.classList.remove("disabled");
 };
 
-const showProductFromCurrentListCollection = (productID) => {
-  product.list.append(listCollection[currentListName][productID]);
+const showProductFromListCollection = (productID, listName = currentListName) => {
+  product.list.append(listCollection[listName][productID]);
 
   if (product.list.children.length > 1) {
     control.sortBtn.classList.remove("disabled");
@@ -130,7 +153,7 @@ const showProductFromCurrentListCollection = (productID) => {
 const showProductFromProductCollection = (productID) => {
   product.list.append(productCollection[productID]);
   control.checkBtn.classList.remove("disabled");
-  updateFormBtn();
+  updateFormAndActionDelSelectedBtn();
 
   if (product.list.children.length > 1) {
     control.sortBtn.classList.remove("disabled");
@@ -138,6 +161,11 @@ const showProductFromProductCollection = (productID) => {
 };
 
 // ** Functions for product (list-item) in product.list **
+const changeProductColor = (e) => {
+  e.target.closest("li").classList.toggle("selected-product");
+  updateActionResetBtn();
+};
+
 const clickOnProductCheckbox = (e) => {
   if (e.target !== e.currentTarget) return;
   e.target.firstElementChild.click();
@@ -146,60 +174,60 @@ const clickOnProductCheckbox = (e) => {
 const removeProductFromProductList = (e) => {
   const listItem = e.target.parentElement;
 
+  listItem.remove();
+
   if (isFormedListActive()) {
-    deleteProductFromCurrentListCollection(listItem);
+    deleteProductFromListCollection(listItem);
+    updateActionResetBtn();
   } else {
     deleteProductFromProductCollection(listItem);
-    updateFormBtn();
+    updateFormAndActionDelSelectedBtn();
 
     if (product.list.children.length === 0) {
       control.checkBtn.classList.add("disabled");
     }
   }
 
-  listItem.remove();
+  updateActionSaveBtn();
 
   if (product.list.children.length < 2) {
     control.sortBtn.classList.add("disabled");
   }
 };
 
-const deleteProductFromCurrentListCollection = (listItem) => {
-  listItem.lastElementChild.removeEventListener(
-    "click",
-    removeProductFromProductList
-  );
+const deleteProductFromListCollection = (listItem, listName = currentListName) => {
+  listItem.removeEventListener("click", changeProductColor);
+  listItem.lastElementChild.removeEventListener("click", removeProductFromProductList);
 
-  delete listCollection[currentListName][listItem.dataset.productKey];
+  delete listCollection[listName][listItem.dataset.productKey];
 };
 
 const deleteProductFromProductCollection = (listItem) => {
-  listItem.firstElementChild.removeEventListener(
-    "click",
-    clickOnProductCheckbox
-  );
-  listItem.firstElementChild.firstElementChild.removeEventListener(
-    "change",
-    updateFormBtn
-  );
-  listItem.lastElementChild.removeEventListener(
-    "click",
-    removeProductFromProductList
-  );
+  listItem.firstElementChild.removeEventListener("click", clickOnProductCheckbox);
+  listItem.firstElementChild.firstElementChild.removeEventListener("change", updateFormAndActionDelSelectedBtn);
+  listItem.lastElementChild.removeEventListener("click", removeProductFromProductList);
 
   delete productCollection[listItem.dataset.productKey];
 };
 
-// ** Functions for new-button **
+// ** Functions for action-button (cog-icon) **
+const toggleActionList = () => {
+  control.actionList.hidden = !control.actionList.hidden;
+
+  if (control.actionList.hidden) {
+    document.removeEventListener("click", toggleActionList);
+  }
+};
+
+// ** Functions for show-button **
 const showProductCollection = () => {
   product.list.classList.remove("formed-list");
-  control.newBtn.classList.add("disabled");
+  action.resetColorsBtn.firstElementChild.classList.add("disabled");
+  control.showBtn.classList.add("disabled");
   product.list.replaceChildren(
-    ...Object.values(productCollection).sort(
-      (a, b) => a.dataset.currentIndex - b.dataset.currentIndex
-    )
+    ...Object.values(productCollection).sort((a, b) => a.dataset.currentIndex - b.dataset.currentIndex)
   );
-  updateFormBtn();
+  updateFormAndActionDelSelectedBtn();
   currentListName = null;
 
   if (product.list.children.length !== 0) {
@@ -220,24 +248,21 @@ const showProductCollection = () => {
 // ** Functions for form-button **
 const hideModal = () => {
   modal.textInput.value = "";
-  modal.container.hidden = true;
+  modal.formContainer.hidden = true;
   document.removeEventListener("click", hideModal);
 };
 
 // ** Functions for modal **
-const addCurrentListToSelectCollection = () => {
+const addListToSelectCollection = (listName = currentListName) => {
   const listItem = document.createElement("li");
-  listItem.dataset.listKey = currentListName;
+  listItem.dataset.listKey = listName;
   listItem.innerHTML = `
-    <span>${currentListName}</span>
+    <span>${listName}</span>
     <button>✖</button>
   `;
 
   listItem.addEventListener("click", makeSelectedListCurrent);
-  listItem.lastElementChild.addEventListener(
-    "click",
-    removeListFromSelectListAndCollection
-  );
+  listItem.lastElementChild.addEventListener("click", removeListFromSelectListAndCollection);
 
   selectCollection.push(listItem);
   control.selectBtn.classList.remove("disabled");
@@ -248,16 +273,17 @@ const addCurrentListToSelectCollection = () => {
   listItem.classList.add("selected-list");
 };
 
-const showCurrentListCollection = () => {
+const showListCollection = (listName = currentListName) => {
   product.list.classList.add("formed-list");
   control.checkBtn.classList.add("disabled");
-  control.newBtn.classList.remove("disabled");
+  control.showBtn.classList.remove("disabled");
   control.formBtn.classList.add("disabled");
+  action.deleteSelectedBtn.firstElementChild.classList.add("disabled");
   product.list.replaceChildren(
-    ...Object.values(listCollection[currentListName]).sort(
-      (a, b) => a.dataset.currentIndex - b.dataset.currentIndex
-    )
+    ...Object.values(listCollection[listName]).sort((a, b) => a.dataset.currentIndex - b.dataset.currentIndex)
   );
+
+  updateActionResetBtn();
 
   if (product.list.children.length > 1) {
     control.sortBtn.classList.remove("disabled");
@@ -280,7 +306,7 @@ const makeSelectedListCurrent = (e) => {
   const listItem = e.target.closest("li");
   currentListName = listItem.dataset.listKey;
 
-  showCurrentListCollection();
+  showListCollection();
 
   selectCollection.forEach((listItem) => {
     listItem.classList.remove("selected-list");
@@ -305,20 +331,47 @@ const removeListFromSelectListAndCollection = (e) => {
 
   if (selectCollection.length) e.stopPropagation();
   else control.selectBtn.classList.add("disabled");
+
+  updateActionSaveBtn();
 };
 
 const deleteListFromListCollection = (listName) => {
   Object.values(listCollection[listName]).forEach((listItem) => {
-    listItem.lastElementChild.removeEventListener(
-      "click",
-      removeProductFromProductList
-    );
+    deleteProductFromListCollection(listItem, listName);
   });
 
   delete listCollection[listName];
 };
 
 // ** Listeners **
+// When the app loaded
+window.addEventListener("load", () => {
+  if (!localStorage.getItem("shopping-list-data")) return;
+
+  const shoppingListData = JSON.parse(localStorage.getItem("shopping-list-data"));
+
+  shoppingListData.productCollection.forEach(([productID, productName]) => {
+    addProductToProductCollection(productID, productName);
+  });
+
+  Object.entries(shoppingListData.listCollection).forEach(([listName, list]) => {
+    listCollection[listName] = {};
+    addListToSelectCollection(listName);
+    list.forEach(([productID, productName]) => {
+      addProductToListCollection(productID, productName, listName);
+    });
+  });
+
+  currentListName = shoppingListData.currentListName;
+  if (currentListName) {
+    showListCollection();
+  } else {
+    showProductCollection();
+  }
+
+  action.deleteFromDiskBtn.firstElementChild.classList.remove("disabled");
+});
+
 // Pressing x-button in product.textInput
 product.form.addEventListener("reset", () => product.textInput.focus());
 
@@ -326,9 +379,7 @@ product.form.addEventListener("reset", () => product.textInput.focus());
 product.form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const productName =
-    product.textInput.value.trim()[0].toUpperCase() +
-    product.textInput.value.trim().slice(1);
+  const productName = product.textInput.value.trim()[0].toUpperCase() + product.textInput.value.trim().slice(1);
   let productID = productName.toLowerCase().replace(/\s+/g, "-");
 
   if (/[а-я]/i.test(productID)) {
@@ -343,8 +394,8 @@ product.form.addEventListener("submit", (e) => {
       return;
     }
 
-    addProductToCurrentListCollection(productID, productName);
-    showProductFromCurrentListCollection(productID);
+    addProductToListCollection(productID, productName);
+    showProductFromListCollection(productID);
   } else {
     if (Object.hasOwn(productCollection, productID)) {
       showPopup(product.alertPopup, 0);
@@ -367,20 +418,116 @@ control.checkBtn.addEventListener("click", (e) => {
 // Changing checkbox in control-panel
 control.checkbox.addEventListener("change", (e) => {
   if (control.checkbox.checked) {
-    product.list
-      .querySelectorAll('input[type="checkbox"]')
-      .forEach((elem) => (elem.checked = true));
+    product.list.querySelectorAll('input[type="checkbox"]').forEach((elem) => (elem.checked = true));
+    control.checkTooltip.innerHTML = "Remove<br>all";
   } else {
-    product.list
-      .querySelectorAll('input[type="checkbox"]')
-      .forEach((elem) => (elem.checked = false));
+    product.list.querySelectorAll('input[type="checkbox"]').forEach((elem) => (elem.checked = false));
+    control.checkTooltip.innerHTML = "Select<br>all";
   }
+
+  updateFormAndActionDelSelectedBtn();
+});
+
+// Pressing action-button (cog-icon)
+control.actionBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  if (control.actionList.hidden) {
+    document.addEventListener("click", toggleActionList);
+  }
+
+  toggleActionList();
+});
+
+// Pressing delete-selected-button in control.actionList
+action.deleteSelectedBtn.addEventListener("click", (e) => {
+  if (action.deleteSelectedBtn.firstElementChild.classList.contains("disabled")) {
+    e.stopPropagation();
+    return;
+  }
+
+  product.list.querySelectorAll("li:has(input:checked)").forEach((listItem) => {
+    removeProductFromProductList({ target: listItem.lastElementChild });
+  });
+
+  updateActionSaveBtn();
+});
+
+// Pressing reset-colors-button in control.actionList
+action.resetColorsBtn.addEventListener("click", (e) => {
+  if (action.resetColorsBtn.firstElementChild.classList.contains("disabled")) {
+    e.stopPropagation();
+    return;
+  }
+
+  Array.from(product.list.children).forEach((listItem) => {
+    listItem.classList.remove("selected-product");
+  });
+
+  updateActionResetBtn();
+});
+
+// Pressing save-to-disk-button in control.actionList
+action.saveToDiskBtn.addEventListener("click", (e) => {
+  if (action.saveToDiskBtn.firstElementChild.classList.contains("disabled")) {
+    e.stopPropagation();
+    return;
+  }
+
+  const shoppingListData = {
+    productCollection: [],
+    listCollection: {},
+  };
+
+  Object.values(productCollection).forEach((listItem) => {
+    shoppingListData.productCollection.push([listItem.dataset.productKey, listItem.dataset.productName]);
+  });
+  Object.entries(listCollection).forEach(([listName, list]) => {
+    shoppingListData.listCollection[listName] = [];
+    Object.values(list).forEach((listItem) => {
+      shoppingListData.listCollection[listName].push([listItem.dataset.productKey, listItem.dataset.productName]);
+    });
+  });
+  shoppingListData.currentListName = currentListName;
+
+  localStorage.setItem("shopping-list-data", JSON.stringify(shoppingListData));
+
+  action.deleteFromDiskBtn.firstElementChild.classList.remove("disabled");
+});
+
+// Pressing delete-from-disk-button in control.actionList
+action.deleteFromDiskBtn.addEventListener("click", (e) => {
+  if (action.deleteFromDiskBtn.firstElementChild.classList.contains("disabled")) {
+    e.stopPropagation();
+    return;
+  }
+
+  modal.confirmContainer.hidden = false;
+});
+
+// Pressing yes-button in modal
+modal.yesBtn.addEventListener("click", () => {
+  localStorage.clear();
+
+  action.deleteFromDiskBtn.firstElementChild.classList.add("disabled");
+
+  modal.confirmContainer.hidden = true;
+});
+
+// Pressing no-button in modal
+modal.noBtn.addEventListener("click", () => {
+  modal.confirmContainer.hidden = true;
 });
 
 // Pressing sort-button
 control.sortBtn.addEventListener("click", () => {
   sortIndex++;
-  if (sortIndex > 2) sortIndex = 0;
+  if (isFormedListActive() && product.list.querySelector("li.selected-product")) {
+    if (sortIndex === 2) sortIndex = 3;
+    if (sortIndex > 5) sortIndex = 0;
+  } else {
+    if (sortIndex > 2) sortIndex = 0;
+  }
   let sortedArray;
 
   switch (sortIndex) {
@@ -396,10 +543,22 @@ control.sortBtn.addEventListener("click", () => {
       );
       control.sortInfoPopup.textContent = "Z-A";
       break;
-    case 2: // default
-      sortedArray = Array.from(product.list.children).sort(
-        (a, b) => a.dataset.defaultIndex - b.dataset.defaultIndex
+    case 3: // green up
+      sortedArray = Array.of(
+        ...product.list.querySelectorAll("li.selected-product"),
+        ...product.list.querySelectorAll("li:not(.selected-product)")
       );
+      control.sortInfoPopup.textContent = "green up";
+      break;
+    case 4: // green down
+      sortedArray = Array.of(
+        ...product.list.querySelectorAll("li:not(.selected-product)"),
+        ...product.list.querySelectorAll("li.selected-product")
+      );
+      control.sortInfoPopup.textContent = "green down";
+      break;
+    default: // default
+      sortedArray = Array.from(product.list.children).sort((a, b) => a.dataset.defaultIndex - b.dataset.defaultIndex);
       control.sortInfoPopup.textContent = "default";
   }
 
@@ -410,14 +569,14 @@ control.sortBtn.addEventListener("click", () => {
   product.list.replaceChildren(...sortedArray);
 });
 
-// Pressing new-button
-control.newBtn.addEventListener("click", showProductCollection);
+// Pressing show-button
+control.showBtn.addEventListener("click", showProductCollection);
 
 // Pressing form-button
 control.formBtn.addEventListener("click", (e) => {
   e.stopPropagation();
 
-  modal.container.hidden = false;
+  modal.formContainer.hidden = false;
   document.addEventListener("click", hideModal);
 });
 
@@ -434,14 +593,11 @@ modal.form.addEventListener("submit", (e) => {
   listCollection[currentListName] = {};
 
   product.list.querySelectorAll("li:has(input:checked)").forEach((listItem) => {
-    addProductToCurrentListCollection(
-      listItem.dataset.productKey,
-      listItem.dataset.productName
-    );
+    addProductToListCollection(listItem.dataset.productKey, listItem.dataset.productName);
   });
 
-  addCurrentListToSelectCollection();
-  showCurrentListCollection();
+  addListToSelectCollection();
+  showListCollection();
 
   hideModal();
 });

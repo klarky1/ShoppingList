@@ -17,8 +17,11 @@
 }
 
 // prettier-ignore
-@mixin popup-setup($left: 50%, $bottom: calc(100% + 13px), $radius: 6px, $padding: 8px, $bg-color: #e46f41, $font-size: 14px, $arrow-position: -6px, $arrow-width: 10px) {
-  display: none;
+@mixin popup-setup($smooth: true, $left: 50%, $bottom: calc(100% + 13px), $radius: 6px, $padding: 8px, $bg-color: #e46f41, $font-size: 14px, $arrow-position: -6px, $arrow-width: 10px) {
+  @if $smooth {
+    visibility: hidden;
+    opacity: 0;
+  } @else { display: none; }
   position: absolute;
   width: max-content;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
@@ -45,13 +48,6 @@
   }
 }
 
-@mixin smooth-popup() {
-  display: block;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s linear;
-}
-
 // prettier-ignore
 @mixin close-button($round: true, $size: 19px, $font-size: 14px, $color: rgba(0, 0, 0, 0.5), $color-active: rgba(0, 0, 0, 0.7), $bg-color-hover: rgba(0, 0, 0, 0.2)) {
   border: 0;
@@ -70,6 +66,34 @@
 
   &:active {
     color: $color-active;
+  }
+}
+
+// prettier-ignore
+@mixin menu-setup() {
+  @include box-shape($border: 1px solid white, $radius: 6px);
+  position: absolute;
+  top: calc(100% + 8px);
+  background-color: #2e2e47;
+  font-size: 16px;
+  overflow: hidden;
+
+  & > li {
+    @include flex-setup($ai: center);
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 6px 10px;
+
+    &:last-of-type {
+      border-bottom: 0;
+    }
+
+    &:hover:not(:has(span.disabled))::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
 }
 
@@ -99,11 +123,15 @@ body {
 }
 
 .alert {
-  @include smooth-popup();
+  transition: opacity 0.2s linear;
 
   &::after {
     margin: auto auto -6px 20%;
   }
+}
+
+.tooltip {
+  transition: opacity 0.2s linear, visibility 0.2s step-end;
 }
 
 .disabled {
@@ -147,12 +175,9 @@ main {
   z-index: 1;
 }
 
-#modal-form {
-  @include box-shape(
-    $border: 1px solid rgb(255, 255, 255),
-    $radius: 10px,
-    $padding: 20px
-  );
+#modal-form,
+#modal-confirm {
+  @include box-shape($border: 1px solid rgb(255, 255, 255), $radius: 10px, $padding: 20px);
   @include flex-setup($dir: column, $gap: 10px, $ai: center);
   position: absolute;
   inset: 0;
@@ -259,14 +284,26 @@ main {
 
 .control-panel-left {
   @include flex-setup($gap: 10px);
+  position: relative;
 
-  & > * {
+  .control-checkbox-container,
+  .control-button {
     @include flex-setup($jc: center, $ai: center);
     width: 38px;
   }
 
-  .control-button {
-    padding-top: 3px;
+  button:nth-of-type(1) {
+    padding: 0;
+
+    span {
+      width: 76%;
+      height: 76%;
+      margin-left: 0.5px;
+    }
+  }
+
+  button:nth-of-type(2) {
+    padding: 3px 0 0;
     font-size: 22px;
   }
 }
@@ -283,10 +320,12 @@ main {
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #ff7d4a;
 
     .tooltip {
-      display: block;
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.2s linear 0.8s, visibility 0s;
     }
   }
 }
@@ -309,6 +348,21 @@ main {
   }
 }
 
+.action-list,
+.select-list {
+  @include menu-setup();
+}
+
+.action-list {
+  left: 28%;
+
+  span {
+    width: max-content;
+    text-align: left;
+    cursor: pointer;
+  }
+}
+
 .sort-type-info {
   visibility: hidden;
   opacity: 0;
@@ -322,31 +376,7 @@ main {
 }
 
 .select-list {
-  @include box-shape($border: 1px solid white, $radius: 6px);
-  position: absolute;
   right: -12px;
-  top: calc(100% + 8px);
-  background-color: #2e2e47;
-  font-size: 16px;
-  overflow: hidden;
-
-  & > li {
-    @include flex-setup($ai: center);
-    position: relative;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 6px 8px;
-
-    &:last-of-type {
-      border-bottom: 0;
-    }
-
-    &:hover::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-  }
 
   span {
     position: relative;
@@ -371,7 +401,7 @@ main {
 }
 
 .selected-list {
-  background-color: #3d5c42;
+  background-color: #545474;
 }
 
 .product-list-container {
@@ -387,12 +417,16 @@ main {
   & > li {
     @include flex-setup($gap: 10px, $ai: center);
     border-bottom: 2px solid rgba(255, 255, 255, 1);
-    background-color: #584775;
+    background-color: #554875;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 
     &:nth-of-type(n + 10):last-of-type {
       border-bottom: 0;
     }
+  }
+
+  .selected-product {
+    background-color: #688f47;
   }
 
   span {
