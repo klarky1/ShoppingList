@@ -4,9 +4,6 @@
     "parcel": "^2.15.4",
     "sass": "^1.89.2"
   },
-  "dependencies": {
-    "cyrillic-to-translit-js": "^3.2.1"
-  },
   "scripts": {
     "start": "parcel src/index.html --open",
     "build": "parcel build src/index.html",

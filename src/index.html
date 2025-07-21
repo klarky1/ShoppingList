@@ -30,7 +30,7 @@
         </div>
         <div id="modal-2" class="modal-container" hidden>
           <div id="modal-confirm">
-            <span>Are you sure you want to delete this?</span>
+            <span>Are you sure you want to delete all data?</span>
             <div class="modal-buttons-container">
               <button id="modal-yes-button" type="button">Yes</button>
               <button id="modal-no-button" type="button">No</button>
@@ -52,7 +52,8 @@
           <div class="control-panel-left">
             <div id="check-button" class="control-checkbox-container disabled">
               <div class="tooltip">Select<br />all</div>
-              <input id="toggle-all-checkbox" type="checkbox" />
+              <input id="toggle-all-checkbox" class="visually-hidden" type="checkbox" />
+              <span class="custom-checkbox"></span>
             </div>
             <button id="action-button" class="control-button">
               <div class="tooltip">Show actions</div>
@@ -113,8 +114,10 @@
             <ul id="select-unordered-list" class="select-list" hidden></ul>
           </div>
         </div>
-        <div class="product-list-container">
-          <ol id="product-ordered-list" class="product-list"></ol>
+        <div class="cropped-scroll-container">
+          <div class="product-list-container">
+            <ol id="product-ordered-list" class="product-list"></ol>
+          </div>
         </div>
       </div>
       <div class="space-container"></div>

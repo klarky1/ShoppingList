@@ -49,27 +49,6 @@
 }
 
 // prettier-ignore
-@mixin close-button($round: true, $size: 19px, $font-size: 14px, $color: rgba(0, 0, 0, 0.5), $color-active: rgba(0, 0, 0, 0.7), $bg-color-hover: rgba(0, 0, 0, 0.2)) {
-  border: 0;
-  background-color: transparent;
-  width: $size;
-  height: $size;
-  line-height: $size;
-  font-size: $font-size;
-  color: $color;
-  @if $round { border-radius: 50%; }
-  @else { border-radius: 0; }
-
-  &:hover {
-    background-color: $bg-color-hover;
-  }
-
-  &:active {
-    color: $color-active;
-  }
-}
-
-// prettier-ignore
 @mixin menu-setup() {
   @include box-shape($border: 1px solid white, $radius: 6px);
   position: absolute;
@@ -94,6 +73,27 @@
       inset: 0;
       background-color: rgba(255, 255, 255, 0.1);
     }
+  }
+}
+
+// prettier-ignore
+@mixin close-button($round: true, $size: 19px, $font-size: 14px, $color: rgba(0, 0, 0, 0.5), $color-active: rgba(0, 0, 0, 0.7), $bg-color-hover: rgba(0, 0, 0, 0.2)) {
+  border: 0;
+  background-color: transparent;
+  width: $size;
+  height: $size;
+  line-height: $size;
+  font-size: $font-size;
+  color: $color;
+  @if $round { border-radius: 50%; }
+  @else { border-radius: 0; }
+
+  &:hover {
+    background-color: $bg-color-hover;
+  }
+
+  &:active {
+    color: $color-active;
   }
 }
 
@@ -137,6 +137,47 @@ body {
 .disabled {
   opacity: 0.3;
   pointer-events: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+
+.custom-checkbox {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  border-radius: 2px;
+  background-color: white;
+}
+
+.visually-hidden:checked + .custom-checkbox {
+  content: "";
+  background-color: rgb(5, 160, 0);
+}
+
+.visually-hidden:checked + .custom-checkbox::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 7px;
+  height: 12px;
+  border: solid rgb(255, 255, 255);
+  border-width: 0 3px 3px 0;
+  transform: rotate(42deg);
+}
+
+.visually-hidden:focus + .custom-checkbox {
+  outline: 1px solid white;
+  outline-offset: 3px;
 }
 
 button,
@@ -404,6 +445,11 @@ main {
   background-color: #545474;
 }
 
+.cropped-scroll-container {
+  @include box-shape($radius: 10px);
+  overflow: hidden;
+}
+
 .product-list-container {
   @include box-shape($border: 2px solid white, $radius: 10px);
   height: 404px;
@@ -423,28 +469,28 @@ main {
     &:nth-of-type(n + 10):last-of-type {
       border-bottom: 0;
     }
+
+    div {
+      @include flex-setup($jc: center, $ai: center);
+      width: 40px;
+      height: 40px;
+      border-right: 2px solid rgba(255, 255, 255, 1);
+      text-shadow: none;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    button {
+      // prettier-ignore
+      @include close-button($size: 23px, $font-size: 16px, $color: rgba(255, 255, 255, 0.6), $color-active: rgba(255, 255, 255, 0.8), $bg-color-hover: rgba(255, 255, 255, 0.2));
+      margin: 0 14px 0 auto;
+    }
   }
 
   .selected-product {
     background-color: #688f47;
-  }
-
-  span {
-    @include flex-setup($jc: center, $ai: center);
-    width: 40px;
-    height: 40px;
-    border-right: 2px solid rgba(255, 255, 255, 1);
-    text-shadow: none;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  button {
-    // prettier-ignore
-    @include close-button($size: 23px, $font-size: 16px, $color: rgba(255, 255, 255, 0.6), $color-active: rgba(255, 255, 255, 0.8), $bg-color-hover: rgba(255, 255, 255, 0.2));
-    margin: 0 14px 0 auto;
   }
 }
 
