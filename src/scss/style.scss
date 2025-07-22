@@ -56,6 +56,8 @@
   background-color: #2e2e47;
   font-size: 16px;
   overflow: hidden;
+  filter: drop-shadow(1px 1px 4px rgba(0, 0, 0, 0.4));
+  z-index: 1;
 
   & > li {
     @include flex-setup($ai: center);
@@ -274,24 +276,24 @@ main {
 
 .product-data-container {
   @include flex-setup($wrap: wrap, $gap: 12px, $jc: center, $ai: center);
+}
 
-  button[type="submit"] {
-    @include box-shape($border: 0, $radius: 4px, $padding: 0 16px);
-    height: 35px;
-    background-color: #77b64d;
-    color: white;
-    font-size: 16px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+#add-button {
+  @include box-shape($border: 0, $radius: 4px, $padding: 0 16px);
+  height: 35px;
+  background-color: #77b64d;
+  color: white;
+  font-size: 16px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 
-    &:hover {
-      background-color: #86d154;
-    }
+  &:hover {
+    background-color: #86d154;
+  }
 
-    &:active {
-      background-color: #649c3f;
-      outline: 2px solid #86d154;
-      outline-offset: -2px;
-    }
+  &:active {
+    background-color: #649c3f;
+    outline: 2px solid #86d154;
+    outline-offset: -2px;
   }
 }
 
@@ -344,8 +346,11 @@ main {
   }
 
   button:nth-of-type(2) {
-    padding: 3px 0 0;
     font-size: 22px;
+
+    span {
+      margin: 3px 0 0 1px;
+    }
   }
 }
 
@@ -513,4 +518,70 @@ main {
 .space-container {
   width: 100%;
   height: 20px;
+}
+
+@media (max-width: 500px) {
+  .control-panel {
+    @include flex-setup($dir: column, $gap: 10px, $jc: flex-start, $ai: center);
+  }
+
+  .control-panel-left,
+  .control-panel-right {
+    gap: clamp(10px, calc(0.1 * 100vw - 30px), 20px);
+  }
+
+  .action-list {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .select-list {
+    right: -35.485px;
+  }
+}
+
+@media (max-width: 480px) {
+  #modal-confirm {
+    width: clamp(250px, calc(0.856836 * 100vw - 24.1875px), 387.09375px);
+  }
+}
+
+@media (max-width: 395px) {
+  #product-form {
+    margin-bottom: 24px;
+  }
+
+  #add-button {
+    padding: 0 28px;
+  }
+
+  .product-list-container {
+    height: 373px;
+  }
+}
+
+@media (max-width: 356px) {
+  .select-list {
+    right: clamp(-35.485px, calc(-0.5 * 100vw + 142.37px), -17.5px);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .product-input-container {
+    button[type="reset"] {
+      margin: auto 4px auto auto;
+      transform: translateX(-100%);
+    }
+  }
+
+  .control-panel-left {
+    button:nth-of-type(2) {
+      font-size: 32px;
+
+      span {
+        margin: 0;
+        margin-top: -9px;
+      }
+    }
+  }
 }
